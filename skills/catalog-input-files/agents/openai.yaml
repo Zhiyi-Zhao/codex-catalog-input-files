@@ -1,0 +1,7 @@
+interface:
+  display_name: "Catalog Input Files"
+  short_description: "Catalog task files into reusable structural explanations"
+  default_prompt: "Use $catalog-input-files to catalog this task folder before analyzing its input files."
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,67 @@
+# =============================================================================
+# Workflow introduction
+# Inputs: pushes and pull requests targeting any branch in this repository.
+# Outputs: cross-platform Python integration-test results and an R-data smoke test.
+# Purpose: verify that the published skill remains portable, privacy-preserving,
+#          and compatible with Python 3.9 through 3.12.
+# Design: run the non-R suite on Windows and Linux; run RDS/RData tests in a
+#         dedicated Ubuntu job with R and jsonlite installed.
+# Jobs: python-tests, r-data-tests.
+# Invocation: automatic on push/pull_request; manual through workflow_dispatch.
+# =============================================================================
+
+name: Validate skill
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  python-tests:
+    name: Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.9", "3.12"]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install test dependencies
+        run: python -m pip install -r requirements-test.txt
+      - name: Compile Python entrypoint
+        run: python -m py_compile skills/catalog-input-files/scripts/file_catalog.py
+      - name: Run non-R integration tests
+        run: python -m pytest -q -k "not r_data"
+
+  r-data-tests:
+    name: RDS and RData
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+      - name: Install jsonlite
+        run: Rscript --vanilla -e "install.packages('jsonlite', repos='https://cloud.r-project.org')"
+      - name: Install test dependencies
+        run: python -m pip install -r requirements-test.txt
+      - name: Parse R helper
+        run: Rscript --vanilla -e "invisible(parse(file='skills/catalog-input-files/scripts/inspect_r_data.R'))"
+      - name: Run R integration test
+        run: python -m pytest -q -k "r_data"

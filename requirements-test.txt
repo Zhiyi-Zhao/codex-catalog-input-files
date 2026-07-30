@@ -1,0 +1,13 @@
+# Purpose: install dependencies used by the public integration tests and CI.
+# Inputs: Python 3.9+ and pip.
+# Outputs: test-only runtime packages; the skill itself keeps optional imports.
+# Usage: python -m pip install -r requirements-test.txt
+
+pandas
+openpyxl
+pyarrow
+PyYAML
+pypdf
+Pillow
+tomli; python_version < "3.11"
+pytest
