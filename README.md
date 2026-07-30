@@ -55,6 +55,10 @@
 
 解析器可能在内存中读取有界样本以推断结构，但不会把样本值写入目录。
 
+### 一个面向未来的问题
+
+> 未来是否会出现一种专供 AI 阅读的新文件格式，将文件内容说明、数据结构、字段语义、来源和更新状态直接整合到文件本身，从而让这些信息能够随文件在不同 Agent、工具和平台之间传播，而无需每次重新解析？
+
 ### 支持的文件
 
 | 类别 | 格式 | 说明 |
@@ -347,6 +351,10 @@ They intentionally omit:
 - image pixels, PDF text, and document cell contents.
 
 Parsers may inspect a bounded in-memory sample to infer structure, but sample values are not written to the catalog.
+
+### A question for the future
+
+> Will a new file format emerge specifically for AI consumption—one that embeds content descriptions, data structures, field semantics, provenance, and update status directly into the file itself, allowing this knowledge to travel with the file across agents, tools, and platforms without being re-derived each time?
 
 ### Supported files
 
